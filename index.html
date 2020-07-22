@@ -1,41 +1,223 @@
 <html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: lightblue; stroke: black;} </style>
+<style> rect {fill: lightblue; stroke: black; }</style>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+rect:hover {
+  fill: orange;
+}
+
+#tooltip {
+  position: absolute;
+  width: auto;
+  height: auto;
+  padding: 10px;
+  background-color: white;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+#tooltip.hidden {
+  display: none;
+}
+
+#tooltip p {
+  margin: 0;
+  font-family: Futura;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+
+</style>
+</head>
+
 <body onload='init()'>
-<svg width=300 height=300>
-</svg>
+
+<div id="tooltip" class="hidden">
+	<p>Fuel Type:</p>
+	<p><span id="value1">100</span></p>
+	<p>Number of car models:</p>
+	<p><span id="value2">100</span></p>
+</div>
+
+<div class="tab">
+  <button class="tablinks" onclick="openSheet(event, 'sheet1')" id="defaultOpen">Sheet1</button>
+  <button class="tablinks" onclick="openSheet(event, 'sheet2')">Sheet2</button>
+  <button class="tablinks" onclick="openSheet(event, 'sheet3')">Sheet3</button>
+</div>
+
+<div id="sheet1" class="tabcontent">
+	<div style="display:flex; flex-direction: row; ">
+		<svg width=300 height=300 id="svg1">
+		</svg>
+		<div width=300 height=300>
+			<p>explanation text</p>
+		</div>
+	</div>
+</div>
+
+<div id="sheet2" class="tabcontent">
+  <h3>Paris</h3>
+  <p>Paris is the capital of France.</p> 
+</div>
+
+<div id="sheet3" class="tabcontent">
+  <h3>Tokyo</h3>
+  <p>Tokyo is the capital of Japan.</p>
+</div>
+
 <script>
 async function init() {
-
-	d3.csv('https://raw.githubusercontent.com/rixu1/rixu-dv/master/resource/Sheet%201.csv', function(rows) {
-	    for (var i = 0; i < rows.length; i++) {
-	        console.log(rows[i].Fuel);
-	        console.log(rows[i].NumCars);
-	    }
-	});
-
-	// var domain = [];
-	// for (const row in data) {
-	// 	console.log(row);
-	// }
-
-	// console.log(domain);
-	// var x = d3.scaleLog().domain([10, 150]).range([0, 200]);
-	// var y = d3.scaleLog().domain([10,150]).range([200, 0]);
-
-	// d3.select("svg")
-	// .append("g")
-	// .attr("transform", "translate("+50+","+50+")")
-	// .selectAll("scatter-dots").data(data).enter().append("svg:circle")
-	// .attr("cx", function(d, i) {return x(d.AverageCityMPG);})
-	// .attr("cy", function(d, i) {return y(d.AverageHighwayMPG);})
-	// .attr("r", function(d, i) {return 2 + parseInt(d.EngineCylinders);})
-
-	// d3.select("svg").append("g").attr("transform", "translate("+50+","+50+")").call(d3.axisLeft(y).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
-
-	// d3.select("svg").append("g").attr("transform", "translate("+50+","+250+")").call(d3.axisBottom(x).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
-
+	renderSheet1();
 }
+
+function renderSheet1() {
+	d3.csv('https://raw.githubusercontent.com/rixu1/rixu-dv/master/resource/Sheet_1.csv').then(function(data) {
+		var rows = [];
+	    for (var i = 0; i < data.length; i++) {
+	    	var tmp = [];
+		    tmp.push(data[i].Fuel);
+		    tmp.push(parseInt(data[i].NumCars));
+		    rows.push(tmp);
+    	}
+    	var domain = [];
+    	var yValues = [];
+		for (var i = 0; i < rows.length; i++) {
+			domain.push(rows[i][0]);
+			yValues.push(rows[i][1]);
+		}
+
+		// console.log(yValues);
+		var maxY = Math.max.apply(Math, yValues);
+		var numRect = domain.length;
+
+		// console.log(maxY);
+		// console.log(numRect);
+
+		var x = d3.scaleBand().domain(domain).range([0, 200]);
+		var y = d3.scaleLinear().domain([0,maxY]).range([200, 0]);
+
+		d3.select("#svg1")
+		.append("g")
+		.attr("transform", "translate(50,50)")
+		.selectAll("rect").data(rows).enter().append("rect")
+		.attr("x", function(d, i) {return (200/numRect) * i;})
+		.attr("y", function(d, i) {return 200 - (200/maxY) * d[1];})
+		.attr("width", 200/numRect)
+		.attr("height", function(d) {return (200/maxY) * d[1];})
+        .on("mouseover", function(d) {
+
+			var xPosition = parseFloat(d3.select(this).attr("x")) + x.bandwidth() / 2;
+			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + 200 / 2;
+
+
+			d3.select("#tooltip")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")
+				.select("#value2")
+				.text(d[1]);
+			d3.select("#tooltip")
+				.select("#value1")
+				.text(d[0]);
+
+
+			d3.select("#tooltip").classed("hidden", false);
+
+	   })
+	   .on("mouseout", function() {
+
+			d3.select("#tooltip").classed("hidden", true);
+
+	   });
+
+	  // text label for the x axis
+	  d3.select("#svg1").append("text")             
+      .attr("transform",
+            "translate(150, 280)")
+      .style("text-anchor", "middle")
+      .style("font-size", "10px")
+      .style("font-weight", "bold")
+      .text("Fuel Type");
+
+     // text label for the y axis
+	d3.select("#svg1").append("text")
+	    .attr("class", "y label")
+	    .attr("text-anchor", "end")
+	    .attr("y", 10)
+	    .attr("x", -70)
+	    .attr("dy", ".75em")
+        .style("font-size", "10px")
+        .style("font-weight", "bold")
+	    .attr("transform", "rotate(-90)")
+	    .text("Number of car models");
+
+		d3.select("#svg1").append("g").attr("transform", "translate("+50+","+50+")").call(d3.axisLeft(y));
+		d3.select("#svg1").append("g").attr("transform", "translate("+50+","+250+")").call(d3.axisBottom(x));
+	});
+}
+
+function openSheet(evt, sheetName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sheetName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
 </script>
 </body>
 </html>
