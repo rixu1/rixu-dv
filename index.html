@@ -89,9 +89,9 @@
          </div>
       </div>
       <div class="tab">
-         <button class="tablinks" onclick="openSheet(event, 'sheet1')" id="defaultOpen">Gasoline</button>
-         <button class="tablinks" onclick="openSheet(event, 'sheet2')">Diesel</button>
-         <button class="tablinks" onclick="openSheet(event, 'sheet3')">Electricity</button>
+         <button class="tablinks" onclick="openSheet(event, 'sheet1')" id="defaultOpen">1. Gasoline</button>
+         <button class="tablinks" onclick="openSheet(event, 'sheet2')">2. Electricity</button>
+         <button class="tablinks" onclick="openSheet(event, 'sheet3')">3. Diesel</button>
       </div>
       <div id="sheet1" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
@@ -119,7 +119,7 @@
       <div id="sheet2" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
             <div>
-               <h3 style="margin-left: 150px;">Diesel</h3>
+               <h3 style="margin-left: 150px;">Electricity</h3>
                <svg width=500 height=500 id="svg2">
                </svg>
             </div>
@@ -133,7 +133,7 @@
       <div id="sheet3" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
             <div>
-               <h3 style="margin-left: 150px;">Electricity</h3>
+               <h3 style="margin-left: 150px;">Diesel</h3>
                <svg width=500 height=500 id="svg3">
                </svg>
             </div>
@@ -257,7 +257,7 @@
          		    tmp.push(parseFloat(data[i].AverageCityMPG));
          		    tmp.push(data[i].Fuel);
                    tmp.push(data[i].Make);
-         	    	if (data[i].Fuel == "Diesel") {
+         	    	if (data[i].Fuel == "Electricity") {
          	    		highlight_rows.push(tmp);
          	    	} else {
          	    		other_rows.push(tmp);
@@ -357,7 +357,7 @@
          		    tmp.push(parseFloat(data[i].AverageCityMPG));
          		    tmp.push(data[i].Fuel);
                    tmp.push(data[i].Make);
-         	    	if (data[i].Fuel == "Electricity") {
+         	    	if (data[i].Fuel == "Diesel") {
          	    		highlight_rows.push(tmp);
          	    	} else {
          	    		other_rows.push(tmp);
