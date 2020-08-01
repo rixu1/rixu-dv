@@ -10,6 +10,7 @@
          overflow: hidden;
          border: 1px solid #ccc;
          background-color: #f1f1f1;
+         width: 800px;
          }
          /* Style the buttons inside the tab */
          .tab button {
@@ -36,6 +37,7 @@
          padding: 6px 12px;
          border: 1px solid #ccc;
          border-top: none;
+         width: 776px;
          }
          .tooltip {
          position: absolute;
@@ -55,11 +57,16 @@
          font-size: 10px;
          line-height: 13px;
          }
+         .tabcontent p {
+            font-size: 13px;
+         }
       </style>
    </head>
    <body onload='init()'>
+      <h2>CityMPG vs HighwayMPG for Gasoline/Diesel/Electricity cars</h2>
       <div id="tooltip1" class="hidden tooltip">
          <div style="margin: 10px;">
+            <p><span id="value0">100</span></p>
             <p><span id="value1">100</span></p>
             <p><span id="value2">100</span></p>
             <p><span id="value3">Fuel Type: Gasoline</span></p>
@@ -67,6 +74,7 @@
       </div>
       <div id="tooltip2" class="hidden tooltip">
          <div style="margin: 10px;">
+            <p><span id="value0">100</span></p>
             <p><span id="value1">100</span></p>
             <p><span id="value2">100</span></p>
             <p><span id="value3">Fuel Type: Diesel</span></p>
@@ -74,6 +82,7 @@
       </div>
       <div id="tooltip3" class="hidden tooltip">
          <div style="margin: 10px;">
+            <p><span id="value0">100</span></p>
             <p><span id="value1">100</span></p>
             <p><span id="value2">100</span></p>
             <p><span id="value3">Fuel Type: Electricity</span></p>
@@ -86,28 +95,52 @@
       </div>
       <div id="sheet1" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
-            <svg width=500 height=500 id="svg1">
-            </svg>
-            <div style="width: 500px;height: 500px;">
-               <p>explanation text</p>
+            <div>
+               <h3 style="margin-left: 150px;">Gasoline</h3>
+               <svg width=500 height=500 id="svg1">
+               </svg>
+            </div>
+            <div style="width: 500px;height: 500px; margin-top: 50px;">
+               <p>
+                  Average City MPG is plotted horizontally on a logarithmic scale. Average Hightway MPG is plotted vertically on a logarithmic scale.
+               </p>
+               <p>
+                  The highlighted dots in orange color represents the car models that runs in gasoline.
+               </p>
+               <p>
+                  A tooltip will show up when mouse hovering on orange dots. Car model information, Average City nad Highway MPG and fuel type will be included in the tooltip.
+               </p>
+               <p>
+                  Base on the observations from the chart on the left, we can make a few conclusions. Gasoline cars are currently the most popular on the market. Gasoline cars are a lot less fuel efficient with less CityMPG and HighwayMPG compared to electric car.
+               </p>
             </div>
          </div>
       </div>
       <div id="sheet2" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
-            <svg width=500 height=500 id="svg2">
-            </svg>
-            <div style="width: 500px;height: 500px;">
-               <p>explanation text</p>
+            <div>
+               <h3 style="margin-left: 150px;">Diesel</h3>
+               <svg width=500 height=500 id="svg2">
+               </svg>
+            </div>
+            <div style="width: 500px;height: 500px; margin-top: 50px;">
+               <p>
+                  Electric cars are currently the second popular on the market. Diesel cars are a lot less fuel efficient with less CityMPG and HighwayMPG compared to electric car. 
+               </p>
             </div>
          </div>
       </div>
       <div id="sheet3" class="tabcontent">
          <div style="display:flex; flex-direction: row; ">
-            <svg width=500 height=500 id="svg3">
-            </svg>
-            <div style="width: 500px;height: 500px;">
-               <p>explanation text</p>
+            <div>
+               <h3 style="margin-left: 150px;">Electricity</h3>
+               <svg width=500 height=500 id="svg3">
+               </svg>
+            </div>
+            <div style="width: 500px;height: 500px; margin-top: 50px;">
+               <p>
+                  Diesel cars are currently the least popular on the market. Electric cars are a lot more fuel efficient with better CityMPG and HighwayMPG compared to other cars. 
+               </p>
             </div>
          </div>
       </div>
@@ -127,6 +160,7 @@
          		    tmp.push(parseFloat(data[i].AverageHighwayMPG));
          		    tmp.push(parseFloat(data[i].AverageCityMPG));
          		    tmp.push(data[i].Fuel);
+                   tmp.push(data[i].Make);
          	    	if (data[i].Fuel == "Gasoline") {
          	    		highlight_rows.push(tmp);
          	    	} else {
@@ -173,9 +207,10 @@
          			d3.select("#tooltip1")
          				.select("#value1")
          				.text("CityMPG: " + d[1]);
+                  d3.select("#tooltip1")
+                     .select("#value0")
+                     .text("Make: " + d[3]);
          			d3.select("#tooltip1").classed("hidden", false);
-         
-         
          	   })
          	   .on("mouseout", function() {
          
@@ -221,12 +256,13 @@
          		    tmp.push(parseFloat(data[i].AverageHighwayMPG));
          		    tmp.push(parseFloat(data[i].AverageCityMPG));
          		    tmp.push(data[i].Fuel);
+                   tmp.push(data[i].Make);
          	    	if (data[i].Fuel == "Diesel") {
          	    		highlight_rows.push(tmp);
          	    	} else {
          	    		other_rows.push(tmp);
          	    	}
-         		    
+         		   
              	}
          
          
@@ -267,6 +303,9 @@
          			d3.select("#tooltip2")
          				.select("#value1")
          				.text("CityMPG: " + d[1]);
+                  d3.select("#tooltip2")
+                     .select("#value0")
+                     .text("Make: " + d[3]);
          			d3.select("#tooltip2").classed("hidden", false);
          
          
@@ -317,6 +356,7 @@
          		    tmp.push(parseFloat(data[i].AverageHighwayMPG));
          		    tmp.push(parseFloat(data[i].AverageCityMPG));
          		    tmp.push(data[i].Fuel);
+                   tmp.push(data[i].Make);
          	    	if (data[i].Fuel == "Electricity") {
          	    		highlight_rows.push(tmp);
          	    	} else {
@@ -363,13 +403,16 @@
          			d3.select("#tooltip3")
          				.select("#value1")
          				.text("CityMPG: " + d[1]);
+                  d3.select("#tooltip3")
+                     .select("#value0")
+                     .text("Make: " + d[3]);
          			d3.select("#tooltip3").classed("hidden", false);
          
          
          	   })
          	   .on("mouseout", function() {
          
-         			d3.select("#tooltip2").classed("hidden", true);
+         			d3.select("#tooltip3").classed("hidden", true);
          			d3.select(this).style("fill", "orange");
          	   });
          
